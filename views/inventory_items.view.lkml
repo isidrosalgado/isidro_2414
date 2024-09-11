@@ -7,10 +7,14 @@ view: inventory_items {
     type: number
     sql: ${TABLE}.id ;;
   }
-  dimension: cost {
+  measure: cost {
     type: number
     sql: ${TABLE}.cost ;;
+    value_format_name: usd
   }
+
+
+
   dimension_group: created {
     type: time
     timeframes: [raw, date, week, month, quarter, year]

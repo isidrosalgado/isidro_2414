@@ -36,7 +36,7 @@ view: products {
     sql: ${TABLE}.sku ;;
   }
   measure: count {
-    type: count
+    type: sum
     drill_fields: [id, item_name, inventory_items.count]
   }
 }
