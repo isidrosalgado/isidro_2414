@@ -62,7 +62,7 @@ view: users {
     sql: ${TABLE}.traffic_source ;;
   }
   measure: count {
-    type: sum
+    type: count
     drill_fields: [id, last_name, first_name, orders.count]
   }
 }
