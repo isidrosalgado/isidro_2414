@@ -29,27 +29,52 @@ view: orders {
     type: count
     drill_fields: [id, users.last_name, users.first_name, users.id, order_items.count]
   }
-  measure: data {
+  dimension: data {
     type: number
     sql: EXTRACT(year from ${TABLE}.created_at);;
     }
 
-  measure: data_1 {
-    type: number
-    sql: EXTRACT(month from ${TABLE}.created_at);;
-  }
-  measure: data_3 {
-    type: number
-    sql: EXTRACT(year from current_date- interval 4 day);;
-  }
-
-  measure: data_4 {
-    type: number
-    sql: EXTRACT(month from current_date- interval 4 day);;
+#   dimension: data_1 {
+#     type: number
+#     sql: EXTRACT(month from ${TABLE}.created_at);;
+#   }
+  dimension: data_3 {
+    type: string
+    sql: EXTRACT(year from now()- interval 4 day);;
   }
 
-  measure: full_data {
+  dimension: data_4 {
     type: number
-    sql:concat('year from ${TABLE}.created_at): ', cast( EXTRACT(year from ${TABLE}.created_at) as char), 'month from ${TABLE}.created_at): ' , cast (EXTRACT(month from ${TABLE}.created_at) as char};;
-}
+    sql: EXTRACT(month from now()- interval 4 day);;
+  }
+
+  dimension: final {
+    type: string
+    sql: Case when ${created_date} = date(EXTRACT(year from now()- interval 4 day,EXTRACT(month from now()- interval 4 day),1) then 'yes' else 'no' end;;
+  }
+
+#   measure: full_data {
+#     type: number
+#     sql:concat('year from ${TABLE}.created_at): ', cast( EXTRACT(year from ${TABLE}.created_at) as char), 'month from ${TABLE}.created_at): ' , cast (EXTRACT(month from ${TABLE}.created_at) as char};;
+# }
+
+# dimension: forecast_date {
+#   type: date
+#   sql:  ADDDATE(DAY, -4, CURRENT_DATE());;
+# }
+
+#   dimension: forecast_year {
+#     type: number
+#     sql:  EXTRACT(YEAR FROM ADDDATE(DAY, -4, CURRENT_DATE()));;
+#   }
+
+#   dimension: forecast_month {
+#     type: number
+#     sql: EXTRACT(MONTH FROM ADDDATE(DAY, -4, CURRENT_DATE()));;
+#   }
+
+#   measure: Budget {
+#   type: number
+#   sql: CASE WHEN${forecast_month} =EXTRACT(MONTH FROM CURRENT_DATE()) THEN ${count} ELSE 0 END ;;
+#   }
 }
