@@ -1,4 +1,4 @@
----
+
 - dashboard: embed_dashboard
   title: Embed_dashboard
   layout: newspaper
