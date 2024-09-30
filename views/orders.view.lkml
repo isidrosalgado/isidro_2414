@@ -16,6 +16,7 @@ view: orders {
     type: string
     sql: ${TABLE}.status ;;
   }
+  #
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
