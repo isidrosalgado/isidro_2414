@@ -1,6 +1,65 @@
+include: "kavya_test.view"
 view: orders {
-  sql_table_name: thelook.orders ;;
+  extends: [kavya_test]
+sql_table_name: thelook.orders ;;
   drill_fields: [id]
+
+  parameter: order_display_option {
+    type: string
+    allowed_value: {
+      label: "User ID + Last Name"
+      value: "id_last_name"
+    }
+    allowed_value: {
+      label: "Status"
+      value: "status"
+    }
+    allowed_value: {
+      label: "Sale Price"
+      value: "sale_price"
+    }
+    default_value: "id_lastname"
+  }
+
+  dimension: id_lastname {
+    type: string
+    sql: CONCAT(${user_id}, ' ', ${users.last_name}) ;;
+    hidden: yes
+  }
+
+  dimension: status_colored {
+    type: string
+    sql: ${status} ;;
+    hidden: yes
+    html:
+    {% if value == 'complete' %}
+    <p style="color: black; background-color: light green; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    {% elsif value == 'pending' %}
+    <p style="color: black; background-color: orange; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    {% else %}
+    <p style="color: black; background-color: red; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    {% endif %} ;;
+  }
+
+  dimension: sale_price_formatted {
+    type: number
+    sql: ${order_items.sale_price} ;;
+    value_format: "$#.00 "
+    hidden: yes
+  }
+
+
+  dimension: order_display {
+    type: string
+    sql:
+    CASE
+      WHEN {% parameter order_display_option %} = 'User ID + Last Name' THEN ${id_lastname}
+      WHEN {% parameter order_display_option %} = 'Status' THEN ${status_colored}
+      WHEN {% parameter order_display_option %} = 'Sale_Price' THEN ${sale_price_formatted}
+      ELSE ${id_lastname}
+    END ;;
+  }
+
 
   dimension: id {
     primary_key: yes
@@ -9,14 +68,25 @@ view: orders {
   }
   dimension_group: created {
     type: time
+    label: "Date"
     timeframes: [raw, time, date, week, month, quarter, year]
     sql: ${TABLE}.created_at ;;
+    #html: {{ rendered_value | date: "%b %d, %y" }};;
   }
   dimension: status {
     type: string
     sql: ${TABLE}.status ;;
+    html: {% if value == 'complete' %}
+    <p style="color: black; background-color: light green; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    {% elsif value == 'pending' %}
+    <p style="color: black; background-color: orange; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    {% else %}
+    <p style="color: black; background-color: red; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    {% endif %}
+    ;;
   }
-  #
+
+
   dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;

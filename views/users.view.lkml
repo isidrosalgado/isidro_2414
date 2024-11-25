@@ -1,5 +1,8 @@
+include: "kavya_test.view"
 view: users {
-  sql_table_name: thelook.users ;;
+
+  extends: [kavya_test]
+    sql_table_name: thelook.users ;;
   drill_fields: [id]
 
   dimension: id {
@@ -17,8 +20,27 @@ view: users {
   }
   dimension: country {
     type: string
+    link: {
+      label: "Explore Top 20 Results"
+      url: "{{ link }}&limit=20"
+    }
     map_layer_name: countries
     sql: ${TABLE}.country ;;
+  }
+  dimension: country_test {
+    type: string
+    sql:
+    {% assign country = ${TABLE}.country %}
+
+    {% case country %}
+    {% when 'US' %}
+    '<img src="https://example.com/flags/usa.png" alt="USA Flag" width="50" height="30">'
+    {% when 'UK' %}
+    '<img src="https://example.com/flags/uk.png" alt="UK Flag" width="50" height="30">'
+    {% else %}
+    'No Image Added'
+    {% endcase %}
+    ;;
   }
   dimension_group: created {
     type: time
@@ -57,7 +79,7 @@ view: users {
     type: string
     sql: ${TABLE}.state ;;
   }
-  dimension: traffic_source {
+    dimension: traffic_source {
     type: string
     sql: ${TABLE}.traffic_source ;;
   }

@@ -1,0 +1,4 @@
+{
+  "orders.order_date.label": "Data do Pedido",
+  "orders.total_amount.label": "Valor Total"
+}

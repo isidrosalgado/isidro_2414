@@ -9,6 +9,10 @@ view: products {
   }
   dimension: brand {
     type: string
+    link: {
+      label: "Liquid test"
+      url: "http://www.google.com/search?q={{ value }}"
+    }
     sql: ${TABLE}.brand ;;
   }
   dimension: category {
