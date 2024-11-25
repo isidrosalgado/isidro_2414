@@ -43,4 +43,11 @@ view: products {
     type: count
     drill_fields: [id, item_name, inventory_items.count]
   }
+  measure: total_liquid_issue{
+    type: number
+    sql: ${retail_price};;
+    html: {% if value < 3 and count._value < 2 and rank._value== 772%}
+<p style="color: black; background-color: lightgreen; font-size: 100%; text-align:center">{{ rendered_value }}</p> {% else %}
+<p style="color: black; background-color: lightblue; font-size: 100%; text-align:center">{{ rendered_value }}</p> {% endif %} ;;
+  }
 }
