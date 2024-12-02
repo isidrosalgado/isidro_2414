@@ -5,7 +5,7 @@ sql_table_name: thelook.orders ;;
   drill_fields: [id]
 
   parameter: order_display_option {
-    type: string
+    type: unquoted
     allowed_value: {
       label: "User ID + Last Name"
       value: "id_last_name"
@@ -21,43 +21,61 @@ sql_table_name: thelook.orders ;;
     default_value: "id_lastname"
   }
 
+  # parameter: status {
+  #   type: unquoted
+  #   allowed_value: {
+  #     label: "Completed"
+  #     value: "complete"
+  #   }
+  #   allowed_value: {
+  #     label: "Pending"
+  #     value: "pending"
+  #   }
+  #   allowed_value: {
+  #     label: "Cancelled"
+  #     value: "cancelled"
+  #   }
+  # }
+
   dimension: id_lastname {
     type: string
     sql: CONCAT(${user_id}, ' ', ${users.last_name}) ;;
-    hidden: yes
+    #hidden: yes
   }
 
   dimension: status_colored {
     type: string
     sql: ${status} ;;
-    hidden: yes
+    #hidden: yes
     html:
     {% if value == 'complete' %}
-    <p style="color: black; background-color: light green; font-size:100%; text-align:center">{{ rendered_value }}</p>
+   <font color="darkgreen">{{ rendered_value }}</font>
     {% elsif value == 'pending' %}
-    <p style="color: black; background-color: orange; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    <font color="orange">{{ rendered_value }}</font>
     {% else %}
-    <p style="color: black; background-color: red; font-size:100%; text-align:center">{{ rendered_value }}</p>
+    <font color="red">{{ rendered_value }}</font>
     {% endif %} ;;
   }
 
   dimension: sale_price_formatted {
     type: number
-    sql: ${order_items.sale_price} ;;
-    value_format: "$#.00 "
-    hidden: yes
+    sql: concat('$' , ${order_items.sale_price});;
+    #hidden: yes
   }
 
 
   dimension: order_display {
-    type: string
+    label_from_parameter: order_display_option
     sql:
-    CASE
-      WHEN {% parameter order_display_option %} = 'User ID + Last Name' THEN ${id_lastname}
-      WHEN {% parameter order_display_option %} = 'Status' THEN ${status_colored}
-      WHEN {% parameter order_display_option %} = 'Sale_Price' THEN ${sale_price_formatted}
-      ELSE ${id_lastname}
-    END ;;
+    {% if order_display_option._parameter_value == 'id_last_name' %}
+        ${id_lastname}
+    {% elsif order_display_option._parameter_value == 'status' %}
+        ${status}
+    {% elsif order_display_option._parameter_value == 'sale_price' %}
+      ${sale_price_formatted}
+    {% else %}
+      ${id_lastname}
+    {% endif %} ;;
   }
 
 
